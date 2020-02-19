@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="mappers.Comment">
+    
+    
+	<!-- 내림차순 정렬로 등록일 기준으로 최신순으로 받아온다. -->
+    <select id="selectById" resultType="CommentVO">
+    	SELECT id, title, content, helpful, score, mod_date AS modDate, reg_date AS regDate, user_id AS userId, company_id AS companyId
+    	FROM  comment 
+    	<choose>
+   			 <when test="type != null and type.equals('user')">
+					WHERE user_id=#{id} 
+   			 </when>
+    		 <when test="type != null and type.equals('company')">
+					WHERE company_id=#{id} 
+    		</when>
+    		<when test="type != null and type.equals('comment')">
+					WHERE id=#{id} 
+    		</when>
+  		</choose>
+    	
+    	ORDER BY id DESC 
+    	
+    	<if test="start != null and limit != null and limit > 0">
+    		limit #{start}, #{limit};
+    	</if>
+ 	</select>
+ 	
+ 	<insert id="create">
+ 		insert into comment (title, content, score, user_id, company_id)
+ 		values(#{title}, #{content}, #{score}, #{userId}, #{companyId})
+ 	</insert>
+  
+  
+ <!--   댓글 갯수 구하기 -->
+    <select id="selectCompanyCommentCount" resultType="java.lang.Integer">
+
+    select count(*)
+    from comment
+    where company_id = #{company_id};
+    </select>
+    
+     <select id="selectUserCommentCount" resultType="java.lang.Integer">
+   		 SELECT count(*) FROM comment WHERE user_id = #{userId}
+    </select>
+    
+    
+    <update id="update">
+    	update comment set title = #{title}, content = #{content}, score = #{score}, mod_date = now()
+    	where id = #{id} , user_id = #{userId}
+    </update>
+    
+    <delete id="delete">
+    	delete from comment
+    	where id = #{id} AND user_id = #{userId}
+    </delete>
+    
+    <update id="helpful">
+    	update comment set helpful = helpful + 1
+    	where id = #{commentId}
+    </update>
+    
+ </mapper>

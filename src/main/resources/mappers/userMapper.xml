@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.webproject.essuyo.dao">
+
+	<!-- 로그인용 sql문. email과 password를 user 테이블에서 찾는다 -->
+	<select id="login" resultType="com.webproject.essuyo.domain.UserVO">
+		select id, name, email, password, fail_password, age, gender,
+		cre_date AS creDate, last_date AS lastDate, juso, phone_no AS phoneNo,
+		business_id AS businessId, image_info_id AS imageInfoId 
+		from user
+		where email = #{email} and password = #{password}
+	</select>
+	
+<!-- 	최종 로그인 날짜를 갱신하는 sql -->
+	<update id="updateLastDate">
+		update user
+		set last_date = NOW()
+	 	where id = #{id}
+	</update>
+	
+<!--  증명서 발급 하기 위한 개인정보 sql -->
+	<select id="print" resultType="com.webproject.essuyo.domain.UserVO">
+		select id, name, email, password, fail_password, age, gender,
+		cre_date AS creDate, last_date AS lastDate, juso, phone_no AS phoneNo
+		from user
+		where id = #{id}
+	</select>
+
+	<!-- 이메일 중복체크용 sql 입력된 이메일을 카운트한다 -->
+	<select id="checkId" resultType="int">
+		select count(*) from user where
+		email = #{email}
+	</select>
+
+	<!-- 일반유저 회원가입용 sql문. 프라이머리 키인 id는 자동 증가고, cre_date는 now()를 이용했다. -->
+	<!-- 기본 프로필 이미지, image_info_id 지정하는 문장 추가. 현재 기본 프로필 이미지를 임의로  61번에 추가해 놨기 
+		때문에 61번을 사용(나중에 바뀔 수 있다) -->
+	<insert id="regist">
+		insert into user(name, email, password, fail_password, age, gender, cre_date, juso, phone_no, image_info_id)
+		values(#{name}, #{email}, #{password}, 0, #{age}, #{gender}, NOW(), #{juso}, #{phoneNo}, 61);
+	</insert>
+
+
+	<!-- 사업체 회원가입은 LAST_INSERT_ID() 때문에 순서대로 서비스를 실행시키는 게 중요하다 -->
+
+	
+<!-- 	유저 테이블에 비지니스 아이디를 업데이트 해주는 sql문 -->
+	<update id="bIdtoUser">
+	update user set business_id = LAST_INSERT_ID() where email = #{email}
+	</update>
+	
+	
+<!-- 	사업체 회원가입은 LAST_INSERT_ID() 때문에 순서대로 서비스를 실행시키는 게 중요하다 -->
+
+	<!-- 사업체 회원가입용 sql, 컴퍼니 정보를 입력 -->
+	<insert id="companyRegist">	
+	<!-- 비즈니스 테이블에 컴퍼니 아이디 입력 -->
+	<!-- 컴퍼니 레지스트가 실행된 다음에 LAST_INSERT_ID()가 실행되면, 컴퍼니 id가 -->
+
+		insert into company(name, type, discription, address, number, homepage, state, time)
+		values(#{name}, #{type}, #{discription}, #{address}, #{number}, #{homepage}, #{state}, #{time})
+	</insert>	
+	<!-- 	비즈니스 테이블에 컴퍼니 아이디 입력 -->
+<!-- 	컴퍼니 레지스트가 실행된 다음에 LAST_INSERT_ID()가 실행되면, 컴퍼니 id가 -->
+
+	<insert id="businessRegist">
+		insert into business (company_id)
+		values(LAST_INSERT_ID())
+	</insert>
+	<!-- 사업체 오너의 회원가입 비즈니스 아이디가 추가됐음 -->
+	<!-- 비즈니스 레지스트가 실행된 다음에 실행되면 LAST_INSERT_ID()에 비즈니스 아이디가 -->
+	<insert id="ownerRegist">
+		insert into user (name, email, password,
+		fail_password, age, gender,
+		cre_date, business_id)	
+		values(#{name},#{email},#{password}, 0, #{age},#{gender}, NOW(),
+		LAST_INSERT_ID())
+	</insert>
+
+
+	<!-- 컴퍼니 테이블 수정하는 sql(미완) -->
+
+	
+<!-- 	컴퍼니 테이블 insert하는 기능 -->
+
+	<insert id="companyUpdate">
+	
+	insert into company(name, type, discription, address, number, homepage, state, time, area_list_id)
+		values(#{name}, #{type}, #{discription}, #{address}, #{number}, #{homepage}, #{state}, #{time}, #{areaListId})
+
+	</insert>
+
+
+	<!-- companyUpdate 컴퍼니 insert 다음에 바로 실행시켜서, 비즈니스 테이블에 컴퍼니 아이디를 넣어준다 -->
+
+	
+<!-- 	컴퍼니 테이블 update 하는 기능 -->
+	<update id="companyModify">
+	update company set
+	name = #{name},
+	type = #{type},
+	discription = #{discription},
+	address = #{address},
+	number = #{number},
+	homepage = #{homepage},
+	state = #{state},
+	time = #{time},
+	area_list_id = #{areaListId}
+	where id = #{id}
+	</update>
+	
+<!-- 	컴퍼니 이미지 테이블에서 이미지 아이디들을 얻는 sql -->
+	<select id="getImgIds" resultType="Integer">
+	select image_info_id
+	from company_image_admin 
+	where company_id = #{id}
+	</select>
+	
+<!-- 	companyUpdate 컴퍼니 insert 다음에 바로 실행시켜서, 비즈니스 테이블에 컴퍼니 아이디를 넣어준다 -->
+
+	<update id="cIdIntoBusiness">
+		update business 
+		set company_id = LAST_INSERT_ID()
+		where id = #{businessId}
+	</update>
+
+
+	<select id="selectById" resultType="UserVO">
+		SELECT id, name, age, gender, email, password, fail_password, cre_date
+		AS creDate, last_date AS lastDate, business_id AS businessId, image_info_id AS imageInfoId
+		FROM user
+
+		<choose>
+			<when test="type != null and type.equals('user')">
+				WHERE id = #{id}
+			</when>
+			<when test="type != null and type.equals('business')">
+				WHERE business_id = #{id}
+			</when>
+
+		</choose>
+
+	</select>
+
+	<select id="selectByEmail" resultType="UserVO">
+		SELECT id, name, age, gender, email, password, fail_password, cre_date AS creDate, 
+		last_date AS lastDate, business_id AS businessId, image_info_id AS imageInfoId 
+		FROM user
+		WHERE email = #{email}
+	</select>
+
+	<update id="update" parameterType="UserVO">
+		UPDATE user
+
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="name != null and name != '' ">name = #{name} ,</if>
+			<if test="password != null and password !=''">password = #{password} ,</if>
+			<if test="gender != null and gender !=''">gender = #{gender} ,</if>
+			<if test="age != null and age !=''"> age = #{age} ,</if>
+			<if test="imageInfoId != null and imageInfoId !=''"> image_info_id = #{imageInfoId} ,</if>
+			<if test="businessId != null and businessId !=''"> business_id = #{businessId} ,</if>
+		</trim>
+
+		<choose>
+			<when test="id != null and id != 0">
+				WHERE id=#{id}
+			</when>
+			<when test="email != null and email != ''">
+				WHERE email=#{email}
+			</when>
+		</choose>
+
+
+
+	</update>
+
+	<select id="recevieID" resultType="UserVO">
+   	<![CDATA[
+   		select email
+   		from user
+   		where id = #{id}
+    ]]>
+	</select>
+
+	<!-- 개인별 총리뷰수 -->
+	<select id="reviewCnt" resultType="Integer">
+		SELECT COUNT(user_id)
+		FROM
+		comment
+		WHERE user_id = #{userId}
+	</select>
+
+</mapper>
+
+  

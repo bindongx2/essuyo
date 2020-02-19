@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="mappers.FacilityAdmin">
+     
+    <select id="selectById" resultType="String">
+  		SELECT name FROM facility WHERE id = ANY (SELECT facility_id FROM facility_admin WHERE company_id= #{compnayId})
+ 	</select>
+
+
+     <insert id="insertToAdmin">
+     insert into facility_admin(company_id, facility_id) values(#{company_id}, #{facility_id}) 
+     </insert>
+     
+     <delete id="deleteFacAdmin" parameterType="Integer">
+     delete from facility_admin where company_id = #{companyId}
+     </delete>
+ </mapper>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mappers.Reservation">
+
+
+<insert id="insert" parameterType="ReservationVO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+INSERT INTO reservation
+(state, product_type, total_price, res_date, product_count, reg_date, company_id, product_id, user_id) 
+VALUES(#{state}, #{productType}, #{totalPrice}, #{resDate}, #{productCount}, NOW(),#{companyId},#{productId},#{userId});
+</insert>
+
+<select id="selectLimitById" resultType="ReservationVO">
+SELECT id, product_type AS productType, state, total_price AS totalPrice , res_date AS resDate, product_count AS productCount,
+reg_date AS regDate, company_id AS companyId, product_id AS productId, user_id AS userId
+FROM reservation WHERE 
+		<choose>
+   			 <when test="type != null and type.equals('user')">
+					user_id = #{id}
+   			 </when>
+    		 <when test="type != null and type.equals('company')">
+					company_id = #{id}
+    		</when>
+ 		</choose>
+ 		
+ 		ORDER BY id DESC
+ 		
+ 		<if test="start != null and limit != null and limit > 0">
+  			limit #{start}, #{limit}
+  		</if>
+ </select>
+ 
+ <select id="selectReservationCount" resultType="Integer">
+	SELECT COUNT(*) FROM reservation WHERE 
+		<choose>
+   			 <when test="type != null and type.equals('user')">
+					user_id = #{id}
+   			 </when>
+    		 <when test="type != null and type.equals('company')">
+					company_id = #{id}
+    		</when>
+ 		</choose>
+ </select>
+ 
+ <select id="selectNotStateById" resultType="ReservationVO">
+SELECT id, product_type AS productType, state, total_price AS totalPrice , res_date AS resDate, product_count AS productCount,
+reg_date AS regDate, company_id AS companyId, product_id AS productId, user_id AS userId
+FROM reservation WHERE 
+		<choose>
+   			 <when test="type != null and type.equals('user')">
+					user_id = #{id}
+   			 </when>
+    		 <when test="type != null and type.equals('company')">
+					company_id = #{id}
+    		</when>
+ 		</choose>
+ 			AND NOT state="취소"
+ </select>
+ 
+ <select id="selectTotalPrice" resultType="Integer">
+SELECT SUM(total_price) FROM reservation WHERE 
+		<choose>
+   			 <when test="type != null and type.equals('user')">
+					user_id = #{id}
+   			 </when>
+    		 <when test="type != null and type.equals('company')">
+					company_id = #{id}
+    		</when>
+ 		</choose>
+ 		AND NOT state="취소"
+ 		
+ </select>
+ 
+ <select id="selectMonthlyPrice" resultType="hashMap">
+		SELECT MONTH(reg_date) AS month, sum(total_price) AS monthlyTotalPrice from reservation 
+		
+			 
+			 <choose>
+   				 <when test="type != null and type.equals('user')">
+					WHERE user_id=#{id} AND
+   			 	</when>
+    		 	<when test="type != null and type.equals('company')">
+					WHERE company_id=#{id} AND
+    			</when>
+  			</choose>
+  		
+  		 NOT state="취소" GROUP BY reg_date
+			 
+	</select>
+	
+	<select id="selectMonthlyReservationCount" resultType="hashMap">
+		SELECT MONTH(reg_date) AS month, count(*) AS count FROM reservation 
+		
+		 <choose>
+   				 <when test="type != null and type.equals('user')">
+					WHERE user_id=#{id} AND
+   			 	</when>
+    		 	<when test="type != null and type.equals('company')">
+					WHERE company_id=#{id} AND
+    			</when>
+  			</choose>
+  		
+  		 NOT state="취소" GROUP BY reg_date
+			 
+	</select>
+	
+		<select id="selectCategoryReservationCount" resultType="hashMap">
+		SELECT product_type AS productType, count(*) AS count FROM reservation 
+		
+		 <choose>
+   				 <when test="type != null and type.equals('user')">
+					WHERE user_id=#{id} AND
+   			 	</when>
+    		 	<when test="type != null and type.equals('company')">
+					WHERE company_id=#{id} AND
+    			</when>
+  			</choose>
+  		
+  		 NOT state="취소" GROUP BY product_type 
+			 
+	</select>
+
+	
+	<select id="selectComprehensiveReservation" resultType="hashMap">
+		
+		SELECT MONTH(reg_date) AS month, product_type AS productType, count(*) AS count FROM reservation 
+		
+		 <choose>
+   				 <when test="type != null and type.equals('user')">
+   				 
+   				 
+					WHERE user_id=#{id} AND
+   			 	</when>
+    		 	<when test="type != null and type.equals('company')">
+					WHERE company_id=#{id} AND
+    			</when>
+  			</choose>
+  		
+  		 NOT state="취소" GROUP BY reg_date, product_type;
+			 
+	</select>
+	
+	
+	<select id="selectGenderReservationCount" resultType="hashMap">
+		SELECT gender, COUNT(*) AS count FROM user WHERE 
+		id = ANY (SELECT user_id FROM reservation WHERE company_id=#{id}) GROUP BY gender;
+ 	</select>
+	
+	<update id="update" parameterType="ReservationVO">
+		UPDATE reservation 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="state != null">state = #{state} ,</if>
+		</trim>
+		WHERE id = #{id}
+ 	</update>
+	
+
+
+
+</mapper>

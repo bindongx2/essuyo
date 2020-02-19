@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+
+<mapper namespace="com.webproject.essuyo.dao.CompanyDao">
+
+	<select id="listAll" resultType="CompanyVO">
+select *
+from company
+order by id
+limit #{start},#{limit};
+
+	</select>
+
+	<select id="listType" resultType="CompanyVO">
+<![CDATA[
+select *
+from company
+where type=#{type}
+order by id
+limit #{start},#{limit};
+]]>
+	</select>
+
+<!--  판매리스트 페이지 필터링 -->
+	<select id="filter" resultType="CompanyVO">
+		select * 
+		from company
+		where type=#{type}
+		      <if test="name.equals('서울')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		       <if test="name.equals('부산')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		        <if test="name.equals('광주')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		          <if test="name.equals('강원도')">
+		      and area_list_id = (select id from area_list where name=#{name})  
+		      </if> 
+		      
+		     <if test="value != ''">
+		      and id = ANY (select company_id from facility_admin
+		          <trim prefix="WHERE" suffixOverrides="or">
+			       <if test="value1 == 1"> facility_id = 1 or</if>
+			       <if test="value2 == 2"> facility_id = 2 or</if>
+			       <if test="value3 == 3"> facility_id = 3 or</if>
+			       <if test="value4 == 4"> facility_id = 4 or</if>
+		          </trim>
+		group by company_id
+		having count(*)>=#{count})
+		     </if>
+		limit #{start}, #{limit};
+	</select>
+
+
+	<select id="select" resultType="CompanyVO">
+<![CDATA[
+SELECT id, name, type, score, discription, address, number, homepage, state, time, area_list_id AS areaListId 
+FROM company WHERE id = #{companyId};
+]]>
+	</select>
+	
+	
+	<!-- 리뷰수 -->
+	<select id="reviews" resultType="Integer">
+		select count(*)
+		from
+		comment
+		where
+		company_id=#{companyId};
+	</select>
+
+	<!-- 가게평점구하기 -->
+	<update id="score" parameterType="Integer">
+		UPDATE company SET score =
+		(SELECT ROUND(AVG(score),1) FROM comment WHERE company_id=#{id})	
+		WHERE id=#{id};
+	</update>
+
+<!--  판매리스트 갯수 구하기 -->
+<select id="listCount" resultType="java.lang.Integer">
+        select count(*) as count
+		from company
+		where type=#{type}
+		      <if test="name.equals('서울')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		       <if test="name.equals('부산')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		        <if test="name.equals('광주')">
+		      and area_list_id = (select id from area_list where name=#{name})
+		      </if>
+		          <if test="name.equals('강원도')">
+		      and area_list_id = (select id from area_list where name=#{name})  
+		      </if> 
+		      
+		     <if test="value != ''">
+		      and id = ANY (select company_id from facility_admin
+		          <trim prefix="WHERE" suffixOverrides="or">
+			       <if test="value1 == 1"> facility_id = 1 or</if>
+			       <if test="value2 == 2"> facility_id = 2 or</if>
+			       <if test="value3 == 3"> facility_id = 3 or</if>
+			       <if test="value4 == 4"> facility_id = 4 or</if>
+		          </trim>
+		group by company_id
+		having count(*)>=#{count})
+		     </if>
+		     ;
+</select>
+
+
+	<select id="selectRankCompany" resultType="CompanyVO">
+
+		SELECT id, name, type, discription, score, address, number, homepage, state, time, area_list_id AS areaListId
+		FROM company
+
+
+		<choose>
+
+			<when test="type != null and type.equals('score')">
+				<if test="subType != null and subType.equals('max')">
+					WHERE score = (SELECT MAX(score) FROM company)
+				</if>
+				<if test="subType != null and subType.equals('min')">
+					WHERE score = (SELECT MIN(score) FROM company)
+				</if>
+			</when>
+
+			<when test="type != null and type.equals('comment')">
+
+				<if test="subType != null and subType.equals('max')">
+					WHERE id = ANY (SELECT company_id FROM comment GROUP BY company_id
+					HAVING COUNT(*) = (SELECT MAX(counted) FROM (SELECT count(*) as counted
+					FROM comment
+					GROUP BY company_id) AS counts))
+
+				</if>
+				<if test="subType != null and subType.equals('min')">
+					WHERE id = ANY (SELECT company_id FROM comment GROUP BY company_id
+					HAVING COUNT(*) =  (SELECT MIN(counted) FROM (SELECT count(*) as counted
+					FROM comment
+					GROUP BY company_id) AS counts))
+				</if>
+			</when>
+			<when test="type != null and type.equals('reservation')">
+
+				<if test="subType != null and subType.equals('max')">
+					WHERE id = ANY (SELECT company_id FROM reservation WHERE NOT state="취소" 
+					GROUP BY company_id 
+					HAVING COUNT(*) = (SELECT MAX(counted) FROM (SELECT count(*) as counted
+					FROM reservation
+					WHERE NOT state="취소" GROUP BY company_id) AS counts))
+				</if>
+				<if test="subType != null and subType.equals('min')">
+					WHERE id = ANY (SELECT company_id FROM reservation  WHERE NOT state="취소" 
+					GROUP BY company_id
+					HAVING COUNT(*) = (SELECT MIN(counted) FROM (SELECT count(*) as counted
+					FROM reservation
+					WHERE NOT state="취소" GROUP BY company_id) AS counts))
+				</if>
+
+			</when>
+
+			<when test="type != null and type.equals('price')">
+
+				<if test="subType != null and subType.equals('max')">
+					WHERE id = ANY (SELECT company_id FROM reservation WHERE NOT state="취소"  
+					GROUP BY company_id
+					HAVING sum(total_price) = (SELECT MAX(counted) 
+					FROM (SELECT sum(total_price) as counted FROM reservation WHERE NOT state="취소" GROUP BY company_id) AS counts))
+				</if>
+				<if test="subType != null and subType.equals('min')">
+					WHERE id = ANY (SELECT company_id FROM reservation WHERE NOT state="취소"  
+					GROUP BY company_id
+					HAVING sum(total_price) = (SELECT MIN(counted) 
+					FROM (SELECT sum(total_price) as counted FROM reservation WHERE NOT state="취소" GROUP BY company_id) AS counts))
+				</if>
+
+			</when>
+		</choose>
+	</select>
+	
+<!-- 	LAST_INSERT_ID로 비즈니스 테이블에서 컴퍼니 아이디를 선택하는 sql문 -->
+	<select id="selectId" resultType="java.lang.Integer">
+	select LAST_INSERT_ID()
+	</select>
+	
+<!-- 	컴퍼니 이미지 관리 테이블에 입력하는 sql문 -->
+	<insert id="companyImgInsert">
+	insert into company_image_admin(company_id, image_info_id) values(#{companyId}, LAST_INSERT_ID())
+	</insert>
+
+
+<select id="allCompanyCount" resultType="hashMap">
+SELECT type, count(*) AS count FROM company GROUP BY type;
+</select>
+
+
+</mapper>
+

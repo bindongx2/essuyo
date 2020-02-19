@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "mappers.QnAMapper">
+	
+	<insert id="create">
+		insert into qna (title, content, reg_date, user_id)
+		values(#{title}, #{content}, NOW(), #{userId})
+	</insert>
+
+	<select id="read" resultType="com.webproject.essuyo.domain.QnAVO">
+		select id, title, content, reg_date, user_id AS userId
+		from qna
+		where id = #{id}
+	</select>
+	
+	<select id="listAll" resultType="com.webproject.essuyo.domain.QnAVO">
+    <![CDATA[
+    	select *
+    	from qna
+    	where id > 0
+    	order by id desc limit 0, 10
+    ]]>
+    </select>
+    
+    <delete id="delete">
+    	delete from qna
+    	where id = #{id}
+    </delete>
+    
+    <update id="update">
+    update qna
+    set title=#{title}, content=#{content}
+    where id=#{id}
+    </update>
+    
+    <update id="updateViewCnt">
+    UPDATE qna
+    SET view_count = view_count + 1
+    WHERE id = #{id}
+    </update>
+    
+   <select id="listPageCri" resultType="com.webproject.essuyo.domain.QnAVO">
+    <![CDATA[
+    	select id, title, content, reg_date AS regDate, user_id AS userId
+    	from qna
+    	where id > 0 
+    	order by id desc, regDate desc
+    	limit #{page}, 10
+    ]]>
+    </select>
+    
+    <select id="listCriteria" resultType="com.webproject.essuyo.domain.QnAVO">
+    <![CDATA[
+    select
+    id, title, content, reg_date AS regDate, user_id AS userId, view_count AS viewCount
+    from
+    qna
+    where id>0
+    order by id desc, reg_date desc
+    limit #{pageStart}, #{perPageNum}
+    ]]>   
+    </select>
+    
+    <select id="countPaging" resultType="java.lang.Integer">
+    <![CDATA[
+   	select count(id)
+   	from qna
+   	where id>0
+    ]]>    
+    </select>
+        
+</mapper>

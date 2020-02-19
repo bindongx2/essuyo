@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+  <mapper namespace="mappers.MessageMapper">
+    
+    <insert id="create">
+    	insert into message (title, content, user_id, receiver_id)
+    	values(#{title}, #{content}, #{userID}, #{receiverID})
+    </insert>
+    
+ 
+    <select id="read" resultType="com.webproject.essuyo.domain.MessageVO">
+    	select megNum, title, content, send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum = #{megNum}
+    </select>
+    
+    <delete id="delete">
+    	delete from message
+    	where megNum = #{megNum}
+    </delete>
+    
+    <select id="listAll" resultType="com.webproject.essuyo.domain.MessageVO">
+    <![CDATA[
+    	select megNum, title, content,  send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum > 0 
+    	order by megNum desc, send_date desc
+    ]]>
+    </select>
+    
+    <select id="listPage" resultType="com.webproject.essuyo.domain.MessageVO">
+    <![CDATA[
+    	select megNum, title, content,  send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum > 0 
+    	order by megNum desc, sendDate desc
+    	limit #{page}, 10
+    ]]>
+    </select>
+    
+    <select id="listCriteria" resultType="com.webproject.essuyo.domain.MessageVO">
+    <![CDATA[
+    	select megNum, title, content, send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum > 0 AND user_id = #{userID} OR receiver_id = #{userID}
+    	order by megNum desc, sendDate desc
+    	limit #{pageStart}, #{perPageNum}
+    ]]>
+    </select>
+    
+    <select id="countPaging" resultType="int">
+    <![CDATA[
+    	select count(megNum)
+    	from message
+    	where megNum > 0 AND user_id = #{userID} OR receiver_id = #{userID}
+    ]]>
+    </select>
+    
+    <update id="updateReadCheck">
+    	UPDATE message
+    	SET read_check = 1
+    	WHERE megNum = #{megNum} AND receiver_id = #{userID}
+    </update>
+    
+    <!-- 보낸 쪽지함 페이징처리  -->
+    <select id="sendCri" resultType="com.webproject.essuyo.domain.MessageVO">
+    <![CDATA[
+    	select megNum, title, content, send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum > 0 AND user_id = #{userID}
+    	order by megNum desc, sendDate desc
+    	limit #{pageStart}, #{perPageNum}
+    ]]>
+    </select>
+    
+    <!-- 받은 쪽지함 페이징처리  -->
+     <select id="recevieCri" resultType="com.webproject.essuyo.domain.MessageVO">
+    <![CDATA[
+    	select megNum, title, content, send_date AS sendDate, read_check AS readCheck, 
+    					user_id AS userID, receiver_id AS receiverID
+    	from message
+    	where megNum > 0 AND receiver_id = #{userID}
+    	order by megNum desc, sendDate desc
+    	limit #{pageStart}, #{perPageNum}
+    ]]>
+    </select>
+   
+    
+    <select id="sendCountPaging" resultType="int">
+    <![CDATA[
+    	select count(megNum)
+    	from message
+    	where megNum > 0 AND user_id = #{userID}
+    ]]>
+    </select>
+    
+    <select id="recevieCountPaging" resultType="int">
+    <![CDATA[
+    	select count(megNum)
+    	from message
+    	where megNum > 0  AND receiver_id = #{userID}
+    ]]>
+    </select>
+    
+    
+    </mapper>

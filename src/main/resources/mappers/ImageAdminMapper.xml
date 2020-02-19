@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+    
+<mapper namespace="mappers.ImageAdmin">
+
+    <select id="selectById" resultType="ImageInfoVO">
+        	SELECT id, save_path AS savePath, type, name, 
+        	cre_date AS creDate, mod_date AS modDate FROM image_info
+   		<choose>
+   			 <when test="type != null and type.equals('product')">
+					WHERE id = ANY (SELECT  image_info_id FROM product_image_admin WHERE product_id=#{id})
+   			 </when>
+   			 <when test="type != null and type.equals('company')">
+     				 WHERE id = ANY (SELECT  image_info_id FROM company_image_admin WHERE company_id=#{id})
+    		</when>
+ 		    <otherwise>
+     				WHERE id = #{id}
+		    </otherwise>
+
+  		</choose>
+    </select>
+    
+     <select id="selectById1" resultType="ImageInfoVO">
+        	SELECT id, save_path AS savePath, type, name, 
+        	cre_date AS creDate, mod_date AS modDate FROM image_info WHERE id = #{id}
+		
+    </select>
+    
+    <insert id="insert" parameterType="ImageInfoVO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+
+    	INSERT INTO image_info(save_path, type, name, cre_date, mod_date) 
+    		VALUES(#{savePath}, #{type}, #{name}, NOW(), NOW() )
+		
+    </insert>
+    
+    <insert id="insertAdminProduct" parameterType="HashMap">
+			INSERT INTO product_image_admin(product_id,image_info_id) VALUES ( #{productId}, #{imageInfoId} )
+    </insert> 
+    
+      <insert id="insertAdminCompany" parameterType="HashMap">
+   	
+			  	INSERT INTO company_iamge_Admin(company_id,image_info_id)
+    			VLAUES
+    			<foreach collection="param" item="item" separator=",">
+      	  			( #{company_id}, #{param.id} )
+        		</foreach>
+	</insert>
+  
+    
+     <delete id="delete" parameterType="Integer">
+		DELETE FROM image_info WHERE id = #{id}		
+    </delete>
+  
+    
+ </mapper>
