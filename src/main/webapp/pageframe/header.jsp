@@ -31,6 +31,9 @@
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav">
 								<li class="nav-item">
+									<a class="nav-link"	href="/seat/seat">좌석</a>
+								</li>
+								<li class="nav-item">
 									<a class="nav-link"	href="/company/list?type='숙박'">숙박</a>
 								</li>
 								<li class="nav-item">

@@ -95,7 +95,7 @@
 										<a href="/company/list?type='숙박'"> <img
 											src="resources/images/menu-hotel.png" class="img-fluid"
 											alt="img13" />
-											<figcapti on>
+											<figcaption>
 												<h5>숙박</h5>
 												<p>${companyCount.hotel}개의 목록</p>
 											</figcaption></a>

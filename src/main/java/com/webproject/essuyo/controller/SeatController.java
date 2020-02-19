@@ -24,9 +24,9 @@ public class SeatController {
 	private static final Logger logger = LoggerFactory.getLogger(SeatController.class);
 	
 	
-	@RequestMapping(value = "/saveSeat", method = RequestMethod.GET)
-	public String  saveSeat(SeatVO seatVO, HttpServletRequest request, Model model) throws Exception{
-		logger.info("saveSeat@@@@");	
+	@RequestMapping(value = "/seat", method = RequestMethod.GET)
+	public String  SeatGET(SeatVO seatVO, HttpServletRequest request, Model model) throws Exception{
+		logger.info("SeatGET@@@@");	
 		
 		return "seat/seat";
 	}
@@ -36,7 +36,7 @@ public class SeatController {
 		logger.info("saveExcelSeat@@@@");	
 		
 		String fileName = file.getOriginalFilename();		//파일 이름
-		String savePath = "C:\\Users\\HSJ\\git\\essuyo\\src\\main\\webapp\\resources\\excel/test"; 	//저장 공간 위치
+		String savePath = "C:\\Users\\HSJ\\workspace\\essuyo\\src\\main\\webapp\\resources\\excel\\test"; 	//저장 공간 위치
 		System.out.println("fileName : " + fileName);
 		
 		//엑셀 파일 저장
