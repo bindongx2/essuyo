@@ -21,6 +21,8 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 public class Excel{
@@ -57,6 +59,7 @@ public class Excel{
 		}
 	
 	//엑셀파일에 셀값들 가져오기
+	@RequestMapping(value ="/excel/file", method= RequestMethod.POST)
 	public static List<Object> getExcelDataMap(String savePath, String fileName){
 		System.out.println("ExcelDataMap !!! Cell데이터 가져오기@@");
 		
