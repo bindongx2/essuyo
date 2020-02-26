@@ -34,7 +34,7 @@
         </div>
     </div>
     <script src="${pageContext.servletContext.contextPath}/resources/js/jquery/jquery.min.js"></script>
-    <script src="${pageContext.servletContext.contextPath}resources/js/popper/umd/popper.min.js"></script>
+    <script src="${pageContext.servletContext.contextPath}/resources/js/popper/umd/popper.min.js"></script>
     <script src="${pageContext.servletContext.contextPath}/resources/js/bootstrap/bootstrap.min.js"></script>
     <script>
     $('[data-toggle="tooltip"]').tooltip();

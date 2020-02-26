@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="../resources/css/themify-icons.css">
 	<link rel="stylesheet" href="../resources/css/set1.css">
 
-	 <style type="text/css">
+	<style type="text/css">
 		@import url(http://fonts.googleapis.com/css?family=Reenie+Beanie);
 		#gridWrap{float: left; width:83%; height:500px; overflow:auto}
 		#mapArea{position:relative; background-repeat:no-repeat}
@@ -45,9 +45,9 @@
         <%@ include file="/pageframe/admin-navigation.jsp" %>
         <div class="page-wrapper">
               <div>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save(false)">저장</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save(true)">시설물 저장</a>
-			  </div>
+					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save()">저장</a>
+<!-- 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save(true)">시설물 저장</a> -->
+			  </div>	
 			  
 			  <div>
 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="createSeat()">좌석등록</a>
@@ -58,17 +58,19 @@
 			  </div>
 			  
 			  <div>
+					시설물 색상 <input class="jscolor" id ="facBGColor" value="AAAAAA" style="width: 80px; text-align: center;">
+						
 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="createFac()">시설물등록</a>
 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="deleteFac()">시설물삭제</a>
 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="clearFac()">선택취소</a>
 				
 					<div id="startNumField" style="display:none; margin-bottom: 20px">
-						<label>시작번호</label>
+						<label>시작번호</label>	
 						<input type="text" id="startNum" value="" onchange="changeStartNum()">
 						<input type="hidden" id="tmpNum" value="">
 					</div>
               </div>
-              
+      
 			  <form action="/seat/saveExcelSeat" method="post" enctype="Multipart/form-data">
 					<input type="file" name="file" id="file" style="display: ">
 					<input type="submit" value="등록">
@@ -99,17 +101,33 @@
     <script src="../resources/js/userpage/sidebarmenu.js"></script>
     <script src="../resources/js/userpage/custom.min.js"></script>
     <script src="../resources/js/utility.js"></script>
+    <script src="../resources/js/jscolor.js"></script>
     
   <script>
   
 	$(document).ready(function(){
 		initMap();
 		
-// 		createExcelCell();
-	}
-		
 	});
+	
 
+	function getAjaxJSON(url, dataObj){
+		var r = null;
+		$.ajax(
+			url,
+			{
+			async : false,
+			data : dataObj,
+			method : "POST",
+			error : function(){
+				alert("ajax 에러 발생");
+			}, success : function(returnData){
+				r = returnData;
+			}
+		});
+		return r;
+	}
+	
 	var Map = {
 		config : {
 			//격자 셀 정보
@@ -120,7 +138,7 @@
 				bg12 : "#D8D8D8",
 				bg21 : "#A4A4A4",
 				bg22 : "#FAFAFA",
-				bgSeat : "#0cbd25"
+				bgSeat : "#0CBD25"
 			}
 			
 			, sizeX : 65    // 격자 X축 크기
@@ -153,24 +171,6 @@
 		return cell;
 	}
 	
-	//엑셀 파일 격자 생성
-	function createExcelCell(){
-		$.ajax({
-			type : method,
-			url : ""
-		});
-// 		var list = ${list};
-		
-// 		for(var i=0; i<list.length; i++){
-// 			var list2 = list[i];
-// 			for(var v =0; list2.length; v++){
-// 					alert(list2[v]);
-// 					getSeat(i,v,list2[v]);
-// 				}
-// 		}
-		
-	}
-	
 	function getMap(){
 		return $("#mapArea");
 	}
@@ -181,11 +181,13 @@
 	
 	//서버로 부터 배치도 격자 크기 조회
 	function initZone(){
+		Map.config.sizeX = 65;
+		Map.config.sizeY = 31;
 	}
 	
 	//격자 크기에 맞춰 div 크기조정 후 셀 div를 추가
 	function initMap(){
-		initZone();
+		initZone();	//격자 크기 설정
 		
 		var m = getMap();
 		m.width(Map.config.cell.width * Map.config.sizeX);
@@ -201,8 +203,7 @@
 				m.append(cell);
 			}
 		}
-		
-// 		installSeat();		//db에 저장된 값 가져와서 좌석목록 조회하여 격자에 셋팅
+		installSeat();		//db에 저장된 값 가져와서 좌석목록 조회하여 격자에 셋팅
 // 		selectLongReservationInPlan(); 
 	}
 	
@@ -295,8 +296,9 @@
 	function enableFac(){
 		if($(this).children().length == 0){
 			var facName = $("#facName").val();
-			var facBGColor = $("#facBGColor").val();
+			var facBGColor = '#' + $("#facBGColor").val();
 			var fac = getFac($(this).attr("x"), $(this).attr("y"), facName, facBGColor);
+			$(this).append(fac);
 		}
 	}
 	
@@ -332,8 +334,8 @@
 	//시설물(셀) 속성 값 조회
 	function getFac(x,y,name,BGColor){
 		var seat = $("<input type='text' class='cellInputFac' />");
-		seat.width(config.cell.width);
-		seat.height(config.cell.height);
+		seat.width(Map.config.cell.width);
+		seat.height(Map.config.cell.height);
 		seat.css("backgroundColor", BGColor);
 		seat.attr("x", x);
 		seat.attr("y", y);
@@ -378,12 +380,11 @@
 	}
 	
 	//좌석 정보 저장
-	function save(isFacilitySave){
+	function save(){
 		var xValues = new Array();
-		var YValues = new Array();
+		var yValues = new Array();
 		var numValues = new Array();
 		
-		var facNameValues = new Array();
 		var facBGColorValues = new Array();
 		var isFac = new Array();
 		
@@ -400,9 +401,7 @@
 			numValues.push($(this).val());
 			xValues.push($(this).attr("x"));
 			yValues.push($(this).attr("y"));
-			
-			facNameValues.push("");
-			facBGColorValues.push("");
+			facBGColorValues.push("#0CBD25");
 			isFac.push("N");
 			
 		});
@@ -412,9 +411,8 @@
 		}
 		
 		$(".cellInputFac").each(function(){
-			facNameValues.push($(this).val());
-			facBGColorValues.push(hexc($(this).css("backgroundColor")));
-			numValues.push("");
+			facBGColorValues.push($(this).css("backgroundColor"));
+			numValues.push($(this).val());
 			xValues.push($(this).attr("x"));
 			yValues.push($(this).attr("y"));
 			isFac.push("Y");
@@ -425,16 +423,10 @@
 		val.y = yValues;
 		val.num = numValues;
 		
-		val.facName = facNameYalues;
 		val.facBGColor = facBGColorValues;
 		val.isFac = isFac;
 		
-		var url = "";
-		if(!isFacilitySave){
-			url = "좌석 저장";
-		}else{
-			url = "시설물 저장";
-		}
+		var url = "<c:url value = '/seat/saveSeat' />";
 		
 		var r = getAjaxJSON(url, val);
 		
@@ -447,31 +439,44 @@
 		
 	}
 	
+	// 서버로 부터 기존 저장된 좌석 목록을 조회하여 격자에 셋팅
 	function installSeat(){
 		$(".cellInput").remove();
+		var url = "<c:url value = '/seat/selectListSeat' />";
 		var param = new Object();
 		
-		
-		var cell = $("div[x='" + x + "'][y='" + y + "']" );
-		var seat = getSeat(x,y,num);
-		seat.attr("seatNum", num);
-		cell.append(seat);
-	}
-	
-	function hexc(colorValue){
-		if(colorValue != ""){
-			var parts = colorValue.match(/^rgb\(\d+),\s*(\d+), \s*(\d+)\)$/);
-			delete(parts[0]);
-			for(var i = 1; i<4; i++){
-				parts[i] = parseInt(parts[i]).toString(16);
-				if(parts[i].length == 1){
-					parts[i] = '0' + parts[i];
+		var r = getAjaxJSON(url, param);
+		if( r && r.seatVOList && r.seatVOList.length>0){
+			for(var i=0; i< r.seatVOList.length; i++){
+				if(r.seatVOList[i].is_FAC == "N"){			//좌석
+					var cell = $("div[x='" + r.seatVOList[i].locX + "'][y='" + r.seatVOList[i].locY + "']" );
+					var seat = getSeat(r.seatVOList[i].locX, r.seatVOList[i].locY, r.seatVOList[i].seatNum);
+					seat.attr("seatNum", r.seatVOList[i].seatNum);
+					cell.append(seat);
+				}else if(r.seatVOList[i].is_FAC == "Y"){	//시설물
+					var cell = $("div[x='" + r.seatVOList[i].locX + "'][y='" + r.seatVOList[i].locY + "']" );
+					var fac = getFac(r.seatVOList[i].locX, r.seatVOList[i].locY, r.seatVOList[i].seatNum, r.seatVOList[i].facBGColor);
+					cell.append(fac);
 				}
+				
 			}
-			var colorValueHex = '#' + parts.join('');
-			return colorValueHex;
 		}
 	}
+	
+// 	function hexc(colorValue){
+// 		if(colorValue != ""){
+// 			var parts = colorValue.match(/^rgb\(\d+),\s*(\d+), \s*(\d+)\)$/);
+// 			delete(parts[0]);
+// 			for(var i = 1; i<4; i++){
+// 				parts[i] = parseInt(parts[i]).toString(16);
+// 				if(parts[i].length == 1){
+// 					parts[i] = '0' + parts[i];
+// 				}
+// 			}
+// 			var colorValueHex = '#' + parts.join('');
+// 			return colorValueHex;
+// 		}
+// 	}
 	
 	function changeStartNum(){
 		$("#tmpNum").val("");

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webproject.essuyo.dao.SeatDao">
+
+<select id="selectListSeat" resultType="SeatVO">
+	select locX, locY, seatNum, facBGColor, IS_FAC
+	from seat;
+</select>
+
+<select id="chkSeat" resultType="SeatVO">
+	select count(*)
+	from seat
+	where locX= #{locX}
+	and locY = #{locY}
+</select>
+	
+<insert id="regSeat">
+	insert into seat (locX, locY, seatNum, facBGColor, IS_FAC)
+	values(#{locX}, #{locY}, #{seatNum}, #{facBGColor}, #{IS_FAC});
+</insert>
+	
+<update id="modSeat">
+	 update seat
+    set seatNum = #{seatNum}
+    where locX = #{locX}
+    and locY = #{locY};
+</update>
+
+<insert id="excelSaveSeat">
+	insert into seat (locX, locY, seatNum, facBGColor, IS_FAC)
+	values(#{locX}, #{locY}, #{seatNum}, #{facBGColor}, #{IS_FAC});
+</insert>
+
+<delete id="deleteSeat">
+	delete from seat;
+</delete>
+
+</mapper>
+

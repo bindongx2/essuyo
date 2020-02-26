@@ -21,12 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 public class Excel{
 
+		
 	//엑셀파일을 읽어서 Workbook객체에 리턴한다.
 	public static Workbook getWorkbook(String filePath) {
 			
@@ -59,14 +58,11 @@ public class Excel{
 		}
 	
 	//엑셀파일에 셀값들 가져오기
-	@RequestMapping(value ="/excel/file", method= RequestMethod.POST)
-	public static List<Object> getExcelDataMap(String savePath, String fileName){
+	public static  List<Map<String, Object>> getExcelDataMap(String savePath, String fileName){
 		System.out.println("ExcelDataMap !!! Cell데이터 가져오기@@");
-		
+
 		String filePath = savePath + "/" + fileName;
-		System.out.println("filePath : " + filePath);
-//		List<List<String>> resultList = new ArrayList<List<String>>();
-		List<Object> cellList = new ArrayList<>();
+		List<Map<String, Object>> cellList = new ArrayList<>();
 		InputStream is = null;
 		OutputStream os = null;
 		
@@ -80,9 +76,9 @@ public class Excel{
 				HSSFRow row;		//행
 				HSSFCell cell;		//셀
 				
-				System.out.println("row count : " + sheet.getPhysicalNumberOfRows());
+				System.out.println("row count : " + sheet.getLastRowNum());
 				
-				for(int i = 0; i< sheet.getPhysicalNumberOfRows();i++) {
+				for(int i = 0; i< sheet.getLastRowNum(); i++) {
 					row = sheet.getRow(i);
 					
 					if(row != null){
@@ -95,32 +91,31 @@ public class Excel{
 		                    if(cell != null){
 			                    Map<String, Object> map = new HashMap<String, Object>();
 		                    	cell.setCellType(CellType.STRING);
-		                    	map.put("x",i);
-		                    	map.put("y", c);
-		                    	map.put("value", cell);
-		                    	
-		                        cellList.add(map);      
-		                    }else{
-//		                        cellList.add("");
+		                    	map.put("locX", c+1);
+		                    	map.put("locY", i+1);
+		                    	map.put("seatNum", cell.getStringCellValue());
+		                    	cellList.add(map);
 		                    }
 		                }
 		                
 		                System.out.println("cellList : " + cellList);
 					}	
 				}
+				
 				book.close();
 				
 			}else if(filePath.toUpperCase().endsWith(".XLSX")) {
 				System.out.println("ExcelDataMap !!! XlSX확장자@@");
+				
 				is = new FileInputStream(filePath);
 				XSSFWorkbook book = new XSSFWorkbook(is);
 				XSSFSheet sheet = book.getSheetAt(0);
 				XSSFRow row;
 				XSSFCell cell;
-				
+			
 				System.out.println("row count : " + sheet.getPhysicalNumberOfRows());
 
-				for(int i = 0; i< sheet.getPhysicalNumberOfRows();i++) {
+				for(int i = 0; i< sheet.getLastRowNum(); i++) {
 					row = sheet.getRow(i);
 					
 					if(row != null){
@@ -132,20 +127,22 @@ public class Excel{
 		                    cell = row.getCell(c);
 		                    System.out.println("셀값 : " + cell);
 		                    if(cell != null){
-		                    	cell.setCellType(CellType.STRING);
-		                        cellList.add(cell.getStringCellValue());      
-		                    }else{
-		                        cellList.add("");
+		                    	Map<String, Object> map = new HashMap<String, Object>();
+			                    cell.setCellType(CellType.STRING);
+			                    	
+			                    map.put("locX", c+1);
+			                    map.put("locY", i+1);
+			                    map.put("seatNum", cell.getStringCellValue());
+			                    cellList.add(map);
 		                    }
 		                }
-		                
-		                System.out.println(cellList);
+		                System.out.println("cellList : " + cellList);
 					}	
 				}
-				book.close();
 				
-			}	
-		
+				book.close();
+			}
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
