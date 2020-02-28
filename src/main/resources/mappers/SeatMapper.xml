@@ -10,11 +10,12 @@
 	from seat;
 </select>
 
-<select id="chkSeat" resultType="SeatVO">
+<select id="chkSeat" resultType="Integer">
 	select count(*)
 	from seat
-	where locX= #{locX}
-	and locY = #{locY}
+	where 1=1
+	and locX = #{locX}
+	and locY = #{locY};
 </select>
 	
 <insert id="regSeat">
@@ -23,8 +24,8 @@
 </insert>
 	
 <update id="modSeat">
-	 update seat
-    set seatNum = #{seatNum}
+	update seat
+    set seatNum = #{seatNum}, IS_FAC = #{IS_FAC}, facBGColor = #{facBGColor}
     where locX = #{locX}
     and locY = #{locY};
 </update>

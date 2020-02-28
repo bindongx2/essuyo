@@ -52,33 +52,44 @@ public class SeatController {
 		return mv;
 	}
 	
-	
 
 	@RequestMapping(value ="/saveSeat", method= RequestMethod.POST)
 	public @ResponseBody ModelAndView saveSeat(HttpServletRequest request, Model model) throws Exception{
 		logger.info("saveSeat@@@@");	
 		ModelAndView mv = new ModelAndView(new MappingJackson2JsonView());
 		List<SeatVO> seatList = new ArrayList<SeatVO>();
+		String result = "";
+		String msg = "";
 		
-		String[] x = request.getParameterValues("x[]");
-		String[] y = request.getParameterValues("y[]");
-		String[] num = request.getParameterValues("num[]");
-		String[] isFac = request.getParameterValues("isFac[]");
-		String[] facBGColor = request.getParameterValues("facBGColor[]");
-		
-		if(num != null && num.length>0) {
-			for(int i=0; i<num.length; i++) {
-					SeatVO seatVO = new SeatVO();
-					seatVO.setLocX(Integer.parseInt(x[i]));
-					seatVO.setLocY(Integer.parseInt(y[i]));
-					seatVO.setSeatNum(num[i]);
-					seatVO.setIs_FAC(isFac[i]);
-					seatVO.setFacBGColor(facBGColor[i]);
-					seatList.add(seatVO);
+		try {
+			String[] x = request.getParameterValues("x[]");
+			String[] y = request.getParameterValues("y[]");
+			String[] num = request.getParameterValues("num[]");
+			String[] isFac = request.getParameterValues("isFac[]");
+			String[] facBGColor = request.getParameterValues("facBGColor[]");
+			
+			if(num != null && num.length>0) {
+				for(int i=0; i<num.length; i++) {
+						SeatVO seatVO = new SeatVO();
+						seatVO.setLocX(Integer.parseInt(x[i]));
+						seatVO.setLocY(Integer.parseInt(y[i]));
+						seatVO.setSeatNum(num[i]);
+						seatVO.setIs_FAC(isFac[i]);
+						seatVO.setFacBGColor(facBGColor[i]);
+						seatList.add(seatVO);
+				}
+				seatService.saveSeat(seatList);
+				result = "Y";
+			}else {
+				msg = "저장할 좌석 정보가 없습니다.";
 			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			msg = e.getMessage();
 		}
 		
-		seatService.saveSeat(seatList);
+		mv.addObject("result", result);
+		mv.addObject("msg", msg);
 		
 		
 		return mv;
@@ -90,7 +101,7 @@ public class SeatController {
 		
 		String fileName = file.getOriginalFilename();		//파일 이름
 		String savePath = "C:\\Users\\HSJ\\workspace\\essuyo\\src\\main\\webapp\\resources\\excel\\test"; 	//저장 공간 위치
-		System.out.println("fileName : " + fileName);
+		logger.info("fileName : " + fileName);
 		
 		//엑셀 파일 저장
 		Excel.writeFile(file,savePath, fileName);
@@ -98,7 +109,6 @@ public class SeatController {
 		//엑셀 파일 불러오기(Cell데이터 가져오기)
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		list = Excel.getExcelDataMap(savePath,fileName);
-		System.out.println("엑셀 데이터 가져와서 Controller 입성!!! ");
 		
 		seatService.deleteSeat();				// 좌석 먼저 모두 삭제
 		
@@ -110,10 +120,10 @@ public class SeatController {
 			String facBGColor = "";
 			String IS_FAC = "";
 			boolean checkNum = CommonUtil.CheckNumber(seatNum);		//문자열이 숫자 인지 문자인지 체크 함수 
-			if(checkNum) {
+			if(checkNum) {	// 좌석인 경우
 				 facBGColor = "#0CBD25"; 
 				 IS_FAC = "N";
-			}else {
+			}else {			// 시설물인 경우
 				 facBGColor = "#AA9854";
 				 IS_FAC = "Y";
 			}

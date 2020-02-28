@@ -23,8 +23,8 @@ public class SeatDao {
 		
 	}
 	
-	public int chkSeat() throws Exception{
-		return session.selectOne(namespace + ".chkSeat");
+	public int chkSeat(Map<String, Object> param) throws Exception{
+		return session.selectOne(namespace + ".chkSeat", param);
 		
 	}
 	

@@ -46,7 +46,6 @@
         <div class="page-wrapper">
               <div>
 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save()">저장</a>
-<!-- 					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save(true)">시설물 저장</a> -->
 			  </div>	
 			  
 			  <div>
@@ -109,25 +108,7 @@
 		initMap();
 		
 	});
-	
 
-	function getAjaxJSON(url, dataObj){
-		var r = null;
-		$.ajax(
-			url,
-			{
-			async : false,
-			data : dataObj,
-			method : "POST",
-			error : function(){
-				alert("ajax 에러 발생");
-			}, success : function(returnData){
-				r = returnData;
-			}
-		});
-		return r;
-	}
-	
 	var Map = {
 		config : {
 			//격자 셀 정보
@@ -204,8 +185,8 @@
 			}
 		}
 		installSeat();		//db에 저장된 값 가져와서 좌석목록 조회하여 격자에 셋팅
-// 		selectLongReservationInPlan(); 
 	}
+	
 	
 	//각 셀에 좌석 삭제 이벤트 부여
 	function deleteSeat(){
@@ -431,15 +412,15 @@
 		var r = getAjaxJSON(url, val);
 		
 		if(r && r.result && r.result == "Y"){
-			installSeat();
 			alert("저장되었습니다.");
+			installSeat();
 		}else{
 			alert("오류가 발생하여 저장에 실패하였습니다.");
 		}
 		
 	}
 	
-	// 서버로 부터 기존 저장된 좌석 목록을 조회하여 격자에 셋팅
+	// DB에 있는 좌석 데이터 가져와서 데이터 뿌려주기
 	function installSeat(){
 		$(".cellInput").remove();
 		var url = "<c:url value = '/seat/selectListSeat' />";

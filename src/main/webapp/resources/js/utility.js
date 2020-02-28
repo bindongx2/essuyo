@@ -184,16 +184,25 @@ function getDateRange(startDate, endDate, listDate)
             listDate.push(strDate);
 
             dateMove.setDate(dateMove.getDate() + 1);
-
         }
-
     }
-
     return listDate;
-
 };
 
-
-
-
-
+//ajax 통신 공통 함수
+function getAjaxJSON(url, dataObj){
+	var r = null;
+	$.ajax(
+		url,
+		{
+		async : false,
+		data : dataObj,
+		method : "POST",
+		error : function(){
+			alert("ajax 에러 발생");
+		}, success : function(returnData){
+			r = returnData;
+		}
+	});
+	return r;
+};

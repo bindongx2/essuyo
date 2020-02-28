@@ -8,10 +8,6 @@ public class SeatVO {
 	private String facBGColor; 		/* 배경 색깔  */
 	private String is_FAC; 			/* 좌석,시설물 구분값   */
 
-	@Override
-	public String toString() {
-		return null;
-	}
 
 	public int getLocX() {
 		return locX;

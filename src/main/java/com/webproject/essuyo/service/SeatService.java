@@ -11,7 +11,6 @@ public interface SeatService {
 
 	public List<SeatVO> selectListSeat() throws Exception;			//엑셀파일 값 불러와서 데이터 저장
 	
-	public int chkSeat() throws Exception;							//x,y값 가져와서 데이터 있는지 확인
 	
 	public void saveSeat(List<SeatVO> seatList) throws Exception;	// 좌석 저장
 	
