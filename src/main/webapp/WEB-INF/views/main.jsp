@@ -265,7 +265,13 @@
 	};
 	
 	$(document).ready(function() {
-		});
+		var cell = $("div [x='1'][y='2']");
+		var seat = $("<input type='text'>");
+		seat.attr("x",1);
+		seat.attr("y",2);
+		cell.append(seat);
+	
+	});
 	
 	</script>
 </body>

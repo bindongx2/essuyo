@@ -43,51 +43,49 @@
     <div id="main-wrapper" data-navbarbg="skin6" data-theme="light" data-layout="vertical" data-sidebartype="full" data-boxed-layout="full">
      
         <%@ include file="/pageframe/admin-navigation.jsp" %>
-        <div class="page-wrapper">
-              <div>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="save()">저장</a>
-			  </div>	
-			  
-			  <div>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="createSeat()">좌석등록</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="deleteSeat()">좌석삭제</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="deleteSeatAll()">전체삭제</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="clearSeat()">선택취소</a>
-					<input type="text" id="inputCountSeat" value="0" style="width: 30px"> 석
-			  </div>
-			  
-			  <div>
-					시설물 색상 <input class="jscolor" id ="facBGColor" value="AAAAAA" style="width: 80px; text-align: center;">
-						
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="createFac()">시설물등록</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="deleteFac()">시설물삭제</a>
-					<a href="#" class="btn" style="padding:1px 23px 3px" onclick="clearFac()">선택취소</a>
-				
-					<div id="startNumField" style="display:none; margin-bottom: 20px">
+        <div class="page-wrapper" style="padding-left: 15px">
+             	<div style="padding-top: 5px;">
+	                <div style="padding-top: 5px; text-align: right" >
+							<button type = "button" class = "btn btn-danger" style="width: 80px; text-align: center; " onclick="save()">저장</button>
+				    </div>	
+				    
+					<div style="padding-bottom: 5px">
+						<button type = "button" class = "btn btn-success" onclick="createSeat()">좌석등록</button>
+						<button type = "button" class = "btn btn-success" onclick="deleteSeat()">좌석삭제</button>
+						<button type = "button" class = "btn btn-success" onclick="deleteAll()">전체삭제</button>
+						<button type = "button" class = "btn btn-success" onclick="clearSeat()">선택취소</button>
+						<input type="text" id="inputCountSeat" value="0" style="width: 30px; text-align: center;"> 석
+					</div>
+					
+					<div id="startNumField" style="display:none; margin-bottom: 5px">
 						<label>시작번호</label>	
 						<input type="text" id="startNum" value="" onchange="changeStartNum()">
 						<input type="hidden" id="tmpNum" value="">
 					</div>
+			  </div>
+			  
+			  <div style="padding-top: 5px; padding-bottom:5px; border-top: solid 1px; border-bottom:solid 1px;">
+					시설물 색상 <input class="jscolor" id ="facBGColor" value="AAAAAA" style="width: 80px; text-align: center;">
+					<div style="padding-top: 5px">
+						<button type = "button" class = "btn btn-info" onclick="createFac()">시설물등록</button>
+						<button type = "button" class = "btn btn-info" onclick="deleteFac()">시설물삭제</button>
+						<button type = "button" class = "btn btn-info" onclick="clearFac()">선택취소</button>
+					</div>
               </div>
       
-			  <form action="/seat/saveExcelSeat" method="post" enctype="Multipart/form-data">
-					<input type="file" name="file" id="file" style="display: ">
-					<input type="submit" value="등록">
-			  </form>
-
-
-            <div class="container-fluid">
-	                <div id="gridWrap">
-							<div id="mapBG">
-								<div id="mapArea">
-								</div>
-                  		  </div>
-               		</div>
-            </div>
-           
-            <footer class="footer text-center">
-                Designed and Developed by Ha Sang Jae
-            </footer>
+      		  <div style="padding-top: 5px; padding-bottom:5px; ">
+				  <form action="/seat/saveExcelSeat" method="post" id="frm" enctype="Multipart/form-data">
+						<input type="file" name="file" id="file" style="width: 200px">
+						<input type="button" class = "btn btn-danger" value="등록" onclick="formSubmit()">
+				  </form>
+			  </div>
+              
+                <div id="gridWrap">
+						<div id="mapBG">
+							<div id="mapArea">
+							</div>
+                 		  </div>
+              	</div>
         </div>
     </div>
     
@@ -185,6 +183,7 @@
 			}
 		}
 		installSeat();		//db에 저장된 값 가져와서 좌석목록 조회하여 격자에 셋팅
+		viewCountSeat();
 	}
 	
 	
@@ -197,18 +196,23 @@
 		$("#startNumField").hide();
 	}
 	
-	//모든 셀에 좌석 삭제 이벤트 부여
-	function deleteSeatAll(){
+	//모든 셀에 좌석 및 시석물 삭제 이벤트 부여
+	function deleteAll(){
 		if(confirm("화면 내 모든셀의 좌석을 삭제 하시겠습니까?")){
 			$(".cell").each(function(){
 				$(this).unbind("click");
 				$(this).css("cursor", "default");
 			});
+			
+			//좌석 삭제
 			$(".cellInput").each(function(){
-				if(!$(this).attr("isLongReservationSeat")){
-					$(this).remove();
-					viewCountSeat();
-				}
+				$(this).remove();
+				viewCountSeat();
+			});
+			
+			//시설물 삭제
+			$(".cellInputFac").each(function(){
+				$(this).remove();
 			});
 			
 		}
@@ -362,62 +366,81 @@
 	
 	//좌석 정보 저장
 	function save(){
-		var xValues = new Array();
-		var yValues = new Array();
-		var numValues = new Array();
-		
-		var facBGColorValues = new Array();
-		var isFac = new Array();
-		
-		var isValid = true;
-		$(".cellInput").each(function(){
-			for(var i = 0; i < numValues.length; i++){
-				if(numValues[i] == $(this).val()){
-					alert("[" + $(this).val() + "] 는 중복되는 좌석번호입니다.");
-					isValid = false;
-					return false;
+		var saveConf = confirm("저장하시겠습니까?");
+		if(saveConf){
+			
+			var xValues = new Array();
+			var yValues = new Array();
+			var numValues = new Array();
+			
+			var facBGColorValues = new Array();
+			var isFac = new Array();
+			
+			var isValid = true;
+			$(".cellInput").each(function(){
+				for(var i = 0; i < numValues.length; i++){
+					if(numValues[i] == $(this).val()){
+						alert("[" + $(this).val() + "] 는 중복되는 좌석번호입니다.");
+						isValid = false;
+						return false;
+					}
 				}
+				
+				numValues.push($(this).val());
+				xValues.push($(this).attr("x"));
+				yValues.push($(this).attr("y"));
+				facBGColorValues.push("#0CBD25");
+				isFac.push("N");
+				
+			});
+			
+			if(isValid == false){
+				return false;
 			}
 			
-			numValues.push($(this).val());
-			xValues.push($(this).attr("x"));
-			yValues.push($(this).attr("y"));
-			facBGColorValues.push("#0CBD25");
-			isFac.push("N");
+			$(".cellInputFac").each(function(){
+				facBGColorValues.push(hexc($(this).css("backgroundColor")));
+				numValues.push($(this).val());
+				xValues.push($(this).attr("x"));
+				yValues.push($(this).attr("y"));
+				isFac.push("Y");
+			});
 			
-		});
-		
-		if(isValid == false){
+			var val = new Object();
+			val.x = xValues;
+			val.y = yValues;
+			val.num = numValues;
+			
+			val.facBGColor = facBGColorValues;
+			val.isFac = isFac;
+			
+			var url = "<c:url value = '/seat/saveSeat' />";
+			
+			var r = getAjaxJSON(url, val);
+			
+			if(r && r.result && r.result == "Y"){
+				alert("저장되었습니다.");
+				installSeat();
+			}else{
+				var msg = r && r.msg ? r.msg : "오류가 발생하여 저장에 실패하였습니다.";
+				alert(msg);
+			}
+		}
+	}
+	
+	//file form submit함수
+	function formSubmit(){
+		var fileValue = $('#file').val();
+		if(fileValue == "" || fileValue == null ){
+			alert("파일을 등록해주세요.");
 			return false;
-		}
-		
-		$(".cellInputFac").each(function(){
-			facBGColorValues.push($(this).css("backgroundColor"));
-			numValues.push($(this).val());
-			xValues.push($(this).attr("x"));
-			yValues.push($(this).attr("y"));
-			isFac.push("Y");
-		});
-		
-		var val = new Object();
-		val.x = xValues;
-		val.y = yValues;
-		val.num = numValues;
-		
-		val.facBGColor = facBGColorValues;
-		val.isFac = isFac;
-		
-		var url = "<c:url value = '/seat/saveSeat' />";
-		
-		var r = getAjaxJSON(url, val);
-		
-		if(r && r.result && r.result == "Y"){
-			alert("저장되었습니다.");
-			installSeat();
 		}else{
-			alert("오류가 발생하여 저장에 실패하였습니다.");
+			var conf = confirm("파일을 등록하시겠습니까?");
+			if(conf){
+				alert("등록을 완료하였습니다.");
+				document.getElementById('frm').submit();
+			}
 		}
-		
 	}
 	
 	// DB에 있는 좌석 데이터 가져와서 데이터 뿌려주기
@@ -444,21 +467,21 @@
 		}
 	}
 	
-// 	function hexc(colorValue){
-// 		if(colorValue != ""){
-// 			var parts = colorValue.match(/^rgb\(\d+),\s*(\d+), \s*(\d+)\)$/);
-// 			delete(parts[0]);
-// 			for(var i = 1; i<4; i++){
-// 				parts[i] = parseInt(parts[i]).toString(16);
-// 				if(parts[i].length == 1){
-// 					parts[i] = '0' + parts[i];
-// 				}
-// 			}
-// 			var colorValueHex = '#' + parts.join('');
-// 			return colorValueHex;
-// 		}
-// 	}
 	
+	// RGB to hex 코드로 변환 
+	function hexc(rgb) {
+	     if (  rgb.search("rgb") == -1 ) {
+	          return rgb;
+	     } else {
+	          rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+	          function hex(x) {
+	               return ("0" + parseInt(x).toString(16)).slice(-2);
+	          }
+	          
+	          return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]); 
+	     }
+	}
+		
 	function changeStartNum(){
 		$("#tmpNum").val("");
 	}

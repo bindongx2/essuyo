@@ -78,6 +78,8 @@ public class SeatController {
 						seatVO.setFacBGColor(facBGColor[i]);
 						seatList.add(seatVO);
 				}
+				
+				seatService.deleteSeat();			// 좌석 먼저 모두 삭제
 				seatService.saveSeat(seatList);
 				result = "Y";
 			}else {
@@ -121,10 +123,10 @@ public class SeatController {
 			String IS_FAC = "";
 			boolean checkNum = CommonUtil.CheckNumber(seatNum);		//문자열이 숫자 인지 문자인지 체크 함수 
 			if(checkNum) {	// 좌석인 경우
-				 facBGColor = "#0CBD25"; 
+				 facBGColor = "#0cbd25"; 
 				 IS_FAC = "N";
 			}else {			// 시설물인 경우
-				 facBGColor = "#AA9854";
+				 facBGColor = "#aa9854";
 				 IS_FAC = "Y";
 			}
 			
