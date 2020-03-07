@@ -185,20 +185,20 @@
 				<div class="col-md-3 featured-responsive">
 					<h5 style="text-align: center">${company.rankTitle}</h5>
 					
-							<div class="featured-place-wrap">
-								<a href="/company/detail?id=${company.id}"> 
-									<img src="${company.image}" class="img-fluid" alt="#">
-										<c:choose>
-											<c:when test="${company.score <= 2}">
-												 <span class="featured-rating">${company.score}</span>
-											</c:when>
-											<c:when test="${company.score <= 4}">
-												 <span class="featured-rating-orange">${company.score}</span>
-											</c:when>
-											<c:otherwise>
-												 <span class="featured-rating-green">${company.score}</span>
-											</c:otherwise>
-										</c:choose>
+					<div class="featured-place-wrap">
+							<a href="/company/detail?id=${company.id}"> 
+							<img src="${company.image}" class="img-fluid" alt="#">
+							<c:choose>
+								<c:when test="${company.score <= 2}">
+									 <span class="featured-rating">${company.score}</span>
+								</c:when>
+								<c:when test="${company.score <= 4}">
+									 <span class="featured-rating-orange">${company.score}</span>
+								</c:when>
+								<c:otherwise>
+									 <span class="featured-rating-green">${company.score}</span>
+								</c:otherwise>
+							</c:choose>
 										
 							<div class="featured-title-box">
 								<h6>${company.name}</h6>
@@ -225,9 +225,9 @@
 									</c:choose>
 								</div>
 							</div>
-						</a>
+							</a>
+						</div>
 					</div>
-				</div>
 				</c:forEach>
 			</c:if>
 		
@@ -265,12 +265,6 @@
 	};
 	
 	$(document).ready(function() {
-		var cell = $("div [x='1'][y='2']");
-		var seat = $("<input type='text'>");
-		seat.attr("x",1);
-		seat.attr("y",2);
-		cell.append(seat);
-	
 	});
 	
 	</script>

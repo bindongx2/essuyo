@@ -35,7 +35,10 @@
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav">
 								<li class="nav-item">
-									<a class="nav-link"	href="/seat/seat">좌석</a>
+									<a class="nav-link"	href="/movie/movieList">영화예매</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link"	href="/seat/seatView">좌석예매</a>
 								</li>
 								<li class="nav-item">
 									<a class="nav-link"	href="/company/list?type='숙박'">숙박</a>

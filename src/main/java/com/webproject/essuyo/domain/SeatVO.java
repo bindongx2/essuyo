@@ -7,7 +7,9 @@ public class SeatVO {
 	private String seatNum; 		/* 좌석 번호  */
 	private String facBGColor; 		/* 배경 색깔  */
 	private String is_FAC; 			/* 좌석,시설물 구분값   */
-
+	private String zone;			/* 상영관      */
+	private String floor;			/* 층수         */
+	
 
 	public int getLocX() {
 		return locX;
@@ -48,6 +50,22 @@ public class SeatVO {
 
 	public void setIs_FAC(String is_FAC) {
 		this.is_FAC = is_FAC;
+	}
+
+	public String getZone() {
+		return zone;
+	}
+
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+
+	public String getFloor() {
+		return floor;
+	}
+
+	public void setFloor(String floor) {
+		this.floor = floor;
 	}
 	
 }

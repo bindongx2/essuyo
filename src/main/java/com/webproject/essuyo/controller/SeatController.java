@@ -41,6 +41,12 @@ public class SeatController {
 		return "seat/seat";
 	}
 	
+	@RequestMapping(value = "/seatView", method = RequestMethod.GET)
+	public String  SeatViewGET(SeatVO seatVO, HttpServletRequest request, Model model) throws Exception{
+		logger.info("SeatGET@@@@");	
+		return "seat/seatView";
+	}
+	
 	@RequestMapping(value = "/selectListSeat", method = RequestMethod.POST)
 	public @ResponseBody ModelAndView   selectListSeat(SeatVO seatVO, HttpServletRequest request, Model model) throws Exception{
 		logger.info("selectListSeat@@@@");	

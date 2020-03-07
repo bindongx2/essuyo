@@ -65,7 +65,7 @@
 			  </div>
 			  
 			  <div style="padding-top: 5px; padding-bottom:5px; border-top: solid 1px; border-bottom:solid 1px;">
-					시설물 색상 <input class="jscolor" id ="facBGColor" value="AAAAAA" style="width: 80px; text-align: center;">
+					 시설물 색상 <input class="jscolor" id ="facBGColor" value="AAAAAA" style="width: 80px; text-align: center;">
 					<div style="padding-top: 5px">
 						<button type = "button" class = "btn btn-info" onclick="createFac()">시설물등록</button>
 						<button type = "button" class = "btn btn-info" onclick="deleteFac()">시설물삭제</button>

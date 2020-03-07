@@ -62,12 +62,6 @@ public class UserController {
 	private FacilityAdminService FAService;
 
 	
-	//2019-06-29(게시판 연습중) sidebar에 있는 게시판 연습중
-	@RequestMapping(value = "/boardPratice", method = RequestMethod.GET)
-	public String abc() throws Exception{
-		return "user/boardPratice";
-	}
-	
 	
 	// 엑셀파일에 데이터 파인딩하여 가져오기(2019-06-13)
 	@RequestMapping(value = "/print", method = RequestMethod.POST)
@@ -347,20 +341,6 @@ public class UserController {
 
 		return "/user/dashboard";
 
-	}
-	//임시(하상재)
-	@GetMapping("/dashboard2")
-	public String showDashboardPage1(HttpSession httpSession, Model model) {
-		
-		String email = (String) httpSession.getAttribute("login");
-		UserVO user = service.getUserVO(email);
-		
-		model.addAttribute("userType", "user");
-		model.addAttribute("id", user.getId());
-		setUserDashboard(email, "user", user.getId(), model);
-		
-		return "/user/dashboard2";
-		
 	}
 
 	@GetMapping("/dashboardCompany")
