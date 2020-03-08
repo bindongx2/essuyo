@@ -15,10 +15,13 @@
 	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/simple-line-icons.css">
 	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/themify-icons.css">
 	<link rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/style.css">
+	
+
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css">
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
 	<script src="${pageContext.servletContext.contextPath}/resources/js/utility.js"></script>
 </head>
 <body>
@@ -38,7 +41,7 @@
 									<a class="nav-link"	href="/movie/movieList">영화예매</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link"	href="/seat/seatView">좌석예매</a>
+									<a class="nav-link"	href="/seat/seatList">좌석예매</a>
 								</li>
 								<li class="nav-item">
 									<a class="nav-link"	href="/company/list?type='숙박'">숙박</a>
