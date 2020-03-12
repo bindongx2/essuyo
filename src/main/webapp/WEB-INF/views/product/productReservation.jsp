@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="com.webproject.essuyo.utility.CommonUtil" %>
+<%@ page import="com.webproject.movie.utility.CommonUtil" %>
 <!DOCTYPE html>
 <html >
 <head>

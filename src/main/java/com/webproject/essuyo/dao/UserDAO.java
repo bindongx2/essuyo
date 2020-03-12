@@ -23,11 +23,6 @@ public class UserDAO {
 
 	private static String namespace = "com.webproject.essuyo.dao";
 
-	// 연습중(사이드바 유저명단)
-	public UserVO userList(UserVO vo) throws Exception {
-		Map<String, Object> dto = new HashMap<>();
-		return session.selectOne(namespace + ".login", dto);
-	}
 	// 로그인 기능을 해 준다. vo 객체에서 이메일과 비번을 받아서 dto 맵에 넣어줌.
 	public UserVO login(UserVO vo) throws Exception {
 		Map<String, Object> dto = new HashMap<>();
