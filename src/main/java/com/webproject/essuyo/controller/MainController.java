@@ -25,4 +25,15 @@ public class MainController {
 		return "/main";
 	}
 	
+	//마스크 입고 약국 지도 조회
+	@GetMapping("/mask")
+	public String mask(Model model, HttpSession session) throws Exception {
+		model.addAttribute("companyCount", companyService.getAllCompanyCount());
+		
+		
+		return "/mask";
+	}
+	
+	
+	
 }

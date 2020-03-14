@@ -38,6 +38,9 @@
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav">
 								<li class="nav-item">
+									<a class="nav-link"	href="/mask">마스크 알리미</a>
+								</li>
+								<li class="nav-item">
 									<a class="nav-link"	href="/movie/movieList">영화예매</a>
 								</li>
 								<li class="nav-item">
