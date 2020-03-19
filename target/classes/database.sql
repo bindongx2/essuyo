@@ -212,6 +212,15 @@ CREATE TABLE qna (
     FOREIGN KEY (user_id) REFERENCES user(email)
 )DEFAULT CHARSET=utf8;
 
+/* 좌석 */
+CREATE TABLE seat (
+	seatSeq integer PRIMARY KEY auto_increment,		/* 번호(기본키) */
+	locX integer not NULL,							/* x좌표 */
+    locY integer not NULL,							/* y좌표 */
+    seatNum varchar(255), 							/* 좌석 번호 */
+    facBGColor varchar(255),						/* 셀 배경색 */
+    IS_FAC varchar(255)								/* 좌석, 시설물 구분값 */
+)DEFAULT CHARSET=utf8; 
 
 
 /*********************************************************************************/

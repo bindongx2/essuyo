@@ -47,7 +47,7 @@ public class LoginController {
 			logger.info("clear login data before");
 			session.removeAttribute("login");
 		}
-
+		System.out.println("비밀번호 &<>테스트 : " + userVO.getPassword());
 		// 서비스의 로그인 메소드를 실행해서 UserVO 객체에 넣는다.
 		UserVO vo = service.login(userVO);
 
