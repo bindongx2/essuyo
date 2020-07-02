@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.47</version>
+			<version>8.0.16</version>
 		</dependency>
 
 		<!-- Restful을 사용하기 위해 Jackson 라이브러리를 등록해준다. 미등록시 에러 발생한다. -->
